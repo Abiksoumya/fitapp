@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  password        String
+  name            String
+  age             Int?
+  gender          String        @default("other")
+  fitnessLevel    String        @default("beginner")
+  fitnessGoal     String        @default("stay_fit")
+  dailyStepGoal   Int           @default(10000)
+  dailyCalGoal    Int           @default(1800)
+  dailyWaterGoal  Float         @default(2.5)
+  weightKg        Float?
+  heightCm        Float?
+  units           String        @default("metric")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  meals           Meal[]
+  waterLogs       WaterLog[]
+  stepLogs        StepLog[]
+  cycleLogs       CycleLog[]
+  symptoms        Symptom[]
+  workoutLogs     WorkoutLog[]
+  refreshTokens   RefreshToken[]
+  subscription    Subscription?
+  scanQuota       ScanQuota?
+  payments        Payment[]
+  topUpPacks      TopUpPack[]
+}
+
+model Subscription {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            String    @default("free")
+  status          String    @default("active")
+  razorpaySubId   String?   @unique
+  razorpayOrderId String?
+  currentPeriodStart DateTime @default(now())
+  currentPeriodEnd   DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model ScanQuota {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scansUsed     Int      @default(0)
+  scansLimit    Int      @default(10)
+  extraScans    Int      @default(0)
+  periodStart   DateTime @default(now())
+  periodEnd     DateTime
+  updatedAt     DateTime @updatedAt
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  razorpayOrderId String   @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount          Int
+  currency        String   @default("INR")
+  status          String   @default("created")
+  type            String   @default("subscription")
+  plan            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TopUpPack {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  razorpayOrderId String   @unique
+  razorpayPaymentId String?
+  scansAdded      Int      @default(30)
+  amount          Int      @default(4900)
+  status          String   @default("created")
+  createdAt       DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Meal {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  mealType  String
+  calories  Float
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fat       Float    @default(0)
+  fibre     Float    @default(0)
+  imageUrl  String?
+  aiScanned Boolean  @default(false)
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model WaterLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  glasses   Int
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model StepLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps     Int
+  distance  Float    @default(0)
+  calories  Float    @default(0)
+  activeMin Int      @default(0)
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@unique([userId, loggedAt])
+}
+
+model CycleLog {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  periodStart DateTime
+  periodEnd   DateTime?
+  cycleLength Int       @default(28)
+  createdAt   DateTime  @default(now())
+}
+
+model Symptom {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  symptoms  String[]
+  loggedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model WorkoutLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutName    String
+  durationMin    Int
+  caloriesBurned Float    @default(0)
+  exercises      Json     @default("[]")
+  completedAt    DateTime @default(now())
+  createdAt      DateTime @default(now())
+}
