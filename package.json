@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev":              "ts-node-dev --respawn --transpile-only src/server.ts",
-  "build":            "rimraf dist && tsc",
-  "start":            "node dist/server.js",
-  "prisma:generate":  "prisma generate",
-  "prisma:migrate":   "prisma migrate deploy"
-
-  },
+  "dev":         "ts-node-dev --respawn --transpile-only src/server.ts",
+  "build":       "rimraf ./dist && tsc",
+  "start":       "node dist/src/server.js",
+  "start:pm2":   "pm2 start dist/src/server.js --name trip-1-backend",
+  "postinstall": "prisma generate"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
