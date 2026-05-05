@@ -27,7 +27,18 @@ export const StepsDao = {
     create: { userId, ...data },
   });
 },
+getMonthly: async (userId: string) => {
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  return prisma.stepLog.findMany({
+    where: {
+      userId,
+      loggedAt: { gte: thirtyDaysAgo },
+    },
+    orderBy: { loggedAt: 'asc' },
+  });
+},
   getWeekly: async (userId: string) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);

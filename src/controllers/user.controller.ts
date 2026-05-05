@@ -21,4 +21,9 @@ export const UserController = {
     const totalWorkouts = await WorkoutDao.getTotalCount(req.user!.id);
     sendSuccess(res, { totalWorkouts });
   },
+  saveFcmToken: async (req: AuthRequest, res: Response) => {
+  const { fcmToken } = req.body;
+  await UserDao.update(req.user!.id, { fcmToken });
+  sendSuccess(res, null, 'FCM token saved');
+},
 };

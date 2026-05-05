@@ -19,4 +19,6 @@ router.get(
   asyncHandler(UserController.getStats),
 );
 
+router.post('/fcm-token', asyncHandler(UserController.saveFcmToken));
+
 export default router;

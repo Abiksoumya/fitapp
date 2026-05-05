@@ -1,4 +1,4 @@
-export type PlanId = 'free' | 'monthly' | 'quarterly' | 'biannual' | 'yearly';
+export type PlanId = 'free' | 'trial' | 'monthly' | 'quarterly' | 'biannual' | 'yearly';
 
 export interface Plan {
   id:           PlanId;
@@ -27,7 +27,7 @@ export const PLANS: Record<PlanId, Plan> = {
     durationDays:  0,
     scansPerMonth: 10,
     features: {
-      foodScanner:     true,   // limited to 10 scans
+      foodScanner:     true,
       cycleTracker:    false,
       workoutPlans:    false,
       progressCharts:  false,
@@ -37,11 +37,29 @@ export const PLANS: Record<PlanId, Plan> = {
     },
   },
 
+  trial: {
+    id:            'trial',
+    name:          'Trial',
+    priceInPaise:  0,
+    priceDisplay:  '₹0',
+    durationDays:  15,
+    scansPerMonth: 30,
+    features: {
+      foodScanner:     true,
+      cycleTracker:    true,
+      workoutPlans:    true,
+      progressCharts:  true,
+      aiCoach:         false,
+      unlimitedLogs:   true,
+      prioritySupport: false,
+    },
+  },
+
   monthly: {
     id:            'monthly',
     name:          'Monthly',
-    priceInPaise:  34900,      // ₹349
-    priceDisplay:  '₹349/mo',
+    priceInPaise:  20900,
+    priceDisplay:  '₹299/mo',
     durationDays:  30,
     scansPerMonth: 90,
     features: {
@@ -49,7 +67,7 @@ export const PLANS: Record<PlanId, Plan> = {
       cycleTracker:    true,
       workoutPlans:    true,
       progressCharts:  true,
-      aiCoach:         false,  // future feature
+      aiCoach:         false,
       unlimitedLogs:   true,
       prioritySupport: false,
     },
@@ -58,8 +76,8 @@ export const PLANS: Record<PlanId, Plan> = {
   quarterly: {
     id:            'quarterly',
     name:          '3 Months',
-    priceInPaise:  84900,      // ₹849
-    priceDisplay:  '₹849 / 3 months',
+    priceInPaise:  79900,
+    priceDisplay:  '₹799 / 3 months',
     durationDays:  90,
     scansPerMonth: 90,
     features: {
@@ -76,7 +94,7 @@ export const PLANS: Record<PlanId, Plan> = {
   biannual: {
     id:            'biannual',
     name:          '6 Months',
-    priceInPaise:  159900,     // ₹1,599
+    priceInPaise:  159900,
     priceDisplay:  '₹1,599 / 6 months',
     durationDays:  180,
     scansPerMonth: 90,
@@ -94,7 +112,7 @@ export const PLANS: Record<PlanId, Plan> = {
   yearly: {
     id:            'yearly',
     name:          'Yearly',
-    priceInPaise:  299900,     // ₹2,999
+    priceInPaise:  299900,
     priceDisplay:  '₹2,999/year',
     durationDays:  365,
     scansPerMonth: 90,
@@ -103,7 +121,7 @@ export const PLANS: Record<PlanId, Plan> = {
       cycleTracker:    true,
       workoutPlans:    true,
       progressCharts:  true,
-      aiCoach:         true,   // bonus for yearly
+      aiCoach:         true,
       unlimitedLogs:   true,
       prioritySupport: true,
     },

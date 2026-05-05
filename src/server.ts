@@ -1,6 +1,7 @@
 import app from './app';
 import env from './config/env';
 import prisma from './config/database';
+import { startNotificationCrons } from './services/notification.service';
 
 const start = async () => {
   try {
@@ -20,6 +21,7 @@ const start = async () => {
 };
 
 start();
+startNotificationCrons();
 
 process.on('SIGTERM', async () => {
   console.log('SIGTERM — shutting down gracefully');

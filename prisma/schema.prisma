@@ -24,6 +24,10 @@ model User {
   units           String        @default("metric")
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  fcmToken        String?
+  workoutReminderTime  String?   // "09:00"
+  workoutReminderOn    Boolean   @default(false)
+
 
   meals           Meal[]
   waterLogs       WaterLog[]
@@ -36,21 +40,24 @@ model User {
   scanQuota       ScanQuota?
   payments        Payment[]
   topUpPacks      TopUpPack[]
+  customWorkoutPlans CustomWorkoutPlan[]
+
 }
 
 model Subscription {
-  id              String    @id @default(cuid())
-  userId          String    @unique
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan            String    @default("free")
-  status          String    @default("active")
-  razorpaySubId   String?   @unique
-  razorpayOrderId String?
-  currentPeriodStart DateTime @default(now())
-  currentPeriodEnd   DateTime?
-  cancelledAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                  String    @id @default(cuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                String    @default("trial")
+  status              String    @default("active")
+  razorpaySubId       String?
+  razorpayOrderId     String?
+  currentPeriodStart  DateTime  @default(now())
+  currentPeriodEnd    DateTime?
+  trialEndDate        DateTime?
+  cancelledAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 model ScanQuota {
@@ -171,4 +178,34 @@ model WorkoutLog {
   exercises      Json     @default("[]")
   completedAt    DateTime @default(now())
   createdAt      DateTime @default(now())
+}
+
+model CustomWorkoutPlan {
+  id           String                @id @default(cuid())
+  userId       String
+  user         User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  category     String                @default("strength")
+  difficulty   String                @default("beginner")
+  durationMin  Int                   @default(30)
+  caloriesBurn Int                   @default(200)
+  description  String?
+  exercises    CustomExercise[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model CustomExercise {
+  id           String             @id @default(cuid())
+  planId       String
+  plan         CustomWorkoutPlan  @relation(fields: [planId], references: [id], onDelete: Cascade)
+  name         String
+  sets         Int                @default(3)
+  reps         Int                @default(10)
+  weight       String             @default("Bodyweight")
+  muscle       String             @default("Full Body")
+  restSec      Int                @default(60)
+  instruction  String?
+  order        Int                @default(0)
+  createdAt    DateTime           @default(now())
 }

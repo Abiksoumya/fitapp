@@ -25,4 +25,8 @@ export const StepsController = {
     const data = await StepsDao.getToday(req.user!.id);
     sendSuccess(res, data || { steps: 0, distance: 0, calories: 0, activeMin: 0 });
   },
+  getMonthly: async (req: AuthRequest, res: Response) => {
+  const data = await StepsDao.getMonthly(req.user!.id);
+  sendSuccess(res, data);
+},
 };

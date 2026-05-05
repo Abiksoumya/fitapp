@@ -11,7 +11,10 @@ export interface UserModel {
   dailyWaterGoal: number;
   weightKg?:      number;
   heightCm?:      number;
-  units:          string;
+  units: string;
+  fcmToken?:             string;    // ← add
+  workoutReminderTime?:  string;    // ← add
+  workoutReminderOn?:    boolean;   // ← add
   createdAt:      Date;
   updatedAt:      Date;
 }
@@ -38,5 +41,8 @@ export interface UserUpdateInput {
   dailyWaterGoal?: number;
   weightKg?:      number;
   heightCm?:      number;
-  units?:         string;
+  units?: string;
+  fcmToken?:            string;    // ← add
+  workoutReminderTime?: string;    // ← add
+  workoutReminderOn?:   boolean;
 }

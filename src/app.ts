@@ -12,6 +12,8 @@ import cycleRoutes from './routes/cycle.routes';
 import nutritionRoutes from './routes/nutrition.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import workoutRoutes from './routes/workout.routes';
+import customWorkoutRoutes from './routes/custom-workout.routes';
+import notificationRoutes from './routes/notification.routes';
 
 
 
@@ -44,6 +46,8 @@ app.use('/api/steps',     stepsRoutes);
 app.use('/api/cycle', cycleRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/workout', workoutRoutes);
+app.use('/api/workout/custom', customWorkoutRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 

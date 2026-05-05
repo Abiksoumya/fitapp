@@ -14,9 +14,23 @@ export const SubscriptionController = {
   },
 
   // GET /api/subscription/plans
-  getPlans: async (_req: AuthRequest, res: Response) => {
-    sendSuccess(res, { plans: PLANS, topup: TOPUP_PACK });
-  },
+ getPlans: async (_req: AuthRequest, res: Response) => {
+
+  // Format for Flutter
+  const plans = Object.values(PLANS)
+    .filter(p => p.id !== 'free')
+    .map(p => ({
+      id:              p.id,
+      name:            p.name,
+      priceInPaise:    p.priceInPaise,
+      priceDisplay:    p.priceDisplay,
+      durationDays:    p.durationDays,
+      scansPerMonth:   p.scansPerMonth,
+      features:        p.features,
+    }));
+
+  sendSuccess(res, { plans, topup: TOPUP_PACK });
+},
 
   // GET /api/subscription/quota
   getQuota: async (req: AuthRequest, res: Response) => {

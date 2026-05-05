@@ -10,5 +10,6 @@ router.use(authenticate);
 router.get('/today',  asyncHandler(StepsController.getToday));
 router.get('/weekly', asyncHandler(StepsController.getWeekly));
 router.post('/sync',  asyncHandler(StepsController.sync));
+router.get('/monthly', asyncHandler(StepsController.getMonthly));
 
 export default router;
