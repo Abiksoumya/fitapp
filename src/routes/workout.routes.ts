@@ -7,7 +7,7 @@ import { WorkoutController } from '../controllers/workout.controller';
 const router = Router();
 
 router.use(authenticate);
-router.use(asyncHandler(requireFeature('workoutPlans')));
+// router.use(asyncHandler(requireFeature('workoutPlans')));
 
 router.get('/today',    asyncHandler(WorkoutController.getToday));
 router.get('/history',  asyncHandler(WorkoutController.getHistory));

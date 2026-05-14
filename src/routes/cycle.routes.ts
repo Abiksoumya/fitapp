@@ -11,7 +11,7 @@ const router = Router();
 router.use(authenticate);
 
 // All cycle routes require cycleTracker feature
-router.use(asyncHandler(requireFeature('cycleTracker')));
+// router.use(asyncHandler(requireFeature('cycleTracker')));
 
 router.get('/current',   asyncHandler(CycleController.getCurrent));
 router.get('/history',   asyncHandler(CycleController.getHistory));

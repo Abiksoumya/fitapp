@@ -232,6 +232,67 @@ export const startNotificationCrons = () => {
       console.error('❌ Workout cron error:', e);
     }
   });
+  
+// ── 5. Monthly scan quota reset — runs daily at midnight ─────────────
+cron.schedule('0 0 * * *', async () => {
+  console.log('🔄 Running monthly scan quota reset cron...');
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find all active paid subscriptions where periodStart was ~30 days ago
+    const subscriptions = await prisma.subscription.findMany({
+      where: {
+        status: 'active',
+        plan:   { notIn: ['trial', 'free'] },
+      },
+      include: {
+        user: {
+          include: { scanQuota: true },
+        },
+      },
+    });
+
+    for (const sub of subscriptions) {
+  if (!sub.user.scanQuota) continue;  // ← sub.user.scanQuota not sub.scanQuota
+
+  const periodStart    = new Date(sub.user.scanQuota.periodStart);
+  const daysSinceReset = Math.round(
+    (today.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  // Reset every 30 days
+  if (daysSinceReset >= 30) {
+    const nextPeriodEnd = new Date(today);
+    nextPeriodEnd.setDate(nextPeriodEnd.getDate() + 30);
+
+    await prisma.scanQuota.update({
+      where: { userId: sub.userId },
+      data: {
+        scansUsed:   0,
+        scansLimit:  90,
+        periodStart: today,
+        periodEnd:   nextPeriodEnd,
+      },
+    });
+
+    console.log(`✅ Scan quota reset for user ${sub.userId} — fresh 90 scans`);
+
+    if (sub.user.fcmToken) {
+      await sendNotification(
+        sub.user.fcmToken,
+        '🎉 Scans refreshed!',
+        'Your monthly food scans have been reset. You have 90 fresh scans available!',
+        { screen: 'nutrition' },
+      );
+    }
+  }
+}
+  } catch (e) {
+    console.error('❌ Scan quota reset cron error:', e);
+  }
+});
+  
 
   console.log('✅ All notification crons started!');
 };

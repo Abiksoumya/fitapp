@@ -1,19 +1,19 @@
 export type PlanId = 'free' | 'trial' | 'monthly' | 'quarterly' | 'biannual' | 'yearly';
 
 export interface Plan {
-  id:           PlanId;
-  name:         string;
-  priceInPaise: number;        // Razorpay uses paise (₹1 = 100 paise)
-  priceDisplay: string;
-  durationDays: number;
+  id:            PlanId;
+  name:          string;
+  priceInPaise:  number;
+  priceDisplay:  string;
+  durationDays:  number;
   scansPerMonth: number;
   features: {
     foodScanner:     boolean;
     cycleTracker:    boolean;
     workoutPlans:    boolean;
-    progressCharts:  boolean;
-    aiCoach:         boolean;
-    unlimitedLogs:   boolean;
+    customPlans:     boolean;
+    stepsTracking:   boolean;
+    nutritionLog:    boolean;
     prioritySupport: boolean;
   };
 }
@@ -25,21 +25,20 @@ export const PLANS: Record<PlanId, Plan> = {
     priceInPaise:  0,
     priceDisplay:  '₹0',
     durationDays:  0,
-    scansPerMonth: 10,
+    scansPerMonth: 0,
     features: {
-      foodScanner:     true,
-      cycleTracker:    false,
-      workoutPlans:    false,
-      progressCharts:  false,
-      aiCoach:         false,
-      unlimitedLogs:   false,
+      foodScanner:     false,
+      cycleTracker:    true,
+      workoutPlans:    true,
+      customPlans:     false,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: false,
     },
   },
-
   trial: {
     id:            'trial',
-    name:          'Trial',
+    name:          'Free Trial',
     priceInPaise:  0,
     priceDisplay:  '₹0',
     durationDays:  15,
@@ -48,81 +47,77 @@ export const PLANS: Record<PlanId, Plan> = {
       foodScanner:     true,
       cycleTracker:    true,
       workoutPlans:    true,
-      progressCharts:  true,
-      aiCoach:         false,
-      unlimitedLogs:   true,
+      customPlans:     true,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: false,
     },
   },
-
   monthly: {
     id:            'monthly',
     name:          'Monthly',
-    priceInPaise:  20900,
-    priceDisplay:  '₹299/mo',
+    priceInPaise:  24900,   // ← ₹249
+    priceDisplay:  '₹249/mo',
     durationDays:  30,
     scansPerMonth: 90,
     features: {
       foodScanner:     true,
       cycleTracker:    true,
       workoutPlans:    true,
-      progressCharts:  true,
-      aiCoach:         false,
-      unlimitedLogs:   true,
+      customPlans:     true,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: false,
     },
   },
-
   quarterly: {
     id:            'quarterly',
     name:          '3 Months',
-    priceInPaise:  79900,
-    priceDisplay:  '₹799 / 3 months',
+    priceInPaise:  69900,   // ← ₹699
+    priceDisplay:  '₹699 / 3 months',
     durationDays:  90,
     scansPerMonth: 90,
     features: {
       foodScanner:     true,
       cycleTracker:    true,
       workoutPlans:    true,
-      progressCharts:  true,
-      aiCoach:         false,
-      unlimitedLogs:   true,
+      customPlans:     true,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: false,
     },
   },
-
   biannual: {
     id:            'biannual',
     name:          '6 Months',
-    priceInPaise:  159900,
-    priceDisplay:  '₹1,599 / 6 months',
+    priceInPaise:  139900,  // ← ₹1,399
+    priceDisplay:  '₹1,399 / 6 months',
     durationDays:  180,
     scansPerMonth: 90,
     features: {
       foodScanner:     true,
       cycleTracker:    true,
       workoutPlans:    true,
-      progressCharts:  true,
-      aiCoach:         false,
-      unlimitedLogs:   true,
+      customPlans:     true,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: true,
     },
   },
-
   yearly: {
     id:            'yearly',
     name:          'Yearly',
-    priceInPaise:  299900,
-    priceDisplay:  '₹2,999/year',
+    priceInPaise:  259900,  // ← ₹2,599
+    priceDisplay:  '₹2,599 / year',
     durationDays:  365,
     scansPerMonth: 90,
     features: {
       foodScanner:     true,
       cycleTracker:    true,
       workoutPlans:    true,
-      progressCharts:  true,
-      aiCoach:         true,
-      unlimitedLogs:   true,
+      customPlans:     true,
+      stepsTracking:   true,
+      nutritionLog:    true,
       prioritySupport: true,
     },
   },
@@ -130,10 +125,9 @@ export const PLANS: Record<PlanId, Plan> = {
 
 export const TOPUP_PACK = {
   scans:        30,
-  priceInPaise: 4900,   // ₹49
+  priceInPaise: 4900,  // ₹49
   priceDisplay: '₹49',
 };
 
-export const getPlan = (planId: PlanId): Plan => PLANS[planId];
-
-export const isPremium = (planId: PlanId): boolean => planId !== 'free';
+export const getPlan    = (planId: PlanId): Plan => PLANS[planId];
+export const isPremium  = (planId: PlanId): boolean => planId !== 'free';

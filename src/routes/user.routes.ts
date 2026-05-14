@@ -15,7 +15,7 @@ router.put('/me',    asyncHandler(UserController.updateMe));
 // Premium only — progress charts
 router.get(
   '/stats',
-  asyncHandler(requireFeature('progressCharts')),
+  // asyncHandler(requireFeature('progressCharts')),
   asyncHandler(UserController.getStats),
 );
 

@@ -10,7 +10,10 @@ export interface UserModel {
   dailyCalGoal:   number;
   dailyWaterGoal: number;
   weightKg?:      number;
-  heightCm?:      number;
+  heightCm?: number;
+  dailyProteinGoal:  number;
+  dailyCarbsGoal:    number;
+  dailyFatGoal:      number;
   units: string;
   fcmToken?:             string;    // ← add
   workoutReminderTime?:  string;    // ← add
@@ -29,6 +32,13 @@ export interface UserCreateInput {
   gender:      string;
   fitnessLevel: string;
   fitnessGoal: string;
+  weightKg?:   number;
+  heightCm?:   number;
+  dailyCalGoal: number;
+  dailyProteinGoal: number;
+  dailyCarbsGoal:   number;
+  dailyFatGoal:     number;
+  
 }
 
 export interface UserUpdateInput {
@@ -44,5 +54,8 @@ export interface UserUpdateInput {
   units?: string;
   fcmToken?:            string;    // ← add
   workoutReminderTime?: string;    // ← add
-  workoutReminderOn?:   boolean;
+  workoutReminderOn?: boolean;
+  dailyProteinGoal?: number;
+  dailyCarbsGoal?:   number;
+  dailyFatGoal?:     number;
 }
