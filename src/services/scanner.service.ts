@@ -7,24 +7,37 @@ import '../config/cloudinary';
 
 const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
-const SCAN_PROMPT = `You are a nutrition expert specializing in Indian and global cuisine.
-Analyze this food image carefully and provide accurate nutritional information.
+const SCAN_PROMPT = `You are a world-class nutrition expert with comprehensive knowledge of all global cuisines including Indian, Chinese, Italian, American, Mexican, Japanese, and all other cuisines worldwide.
+
+Analyze this food image carefully and provide accurate nutritional information for ANY type of food including:
+- Fresh fruits and vegetables
+- Packaged and processed foods
+- Baked goods (cakes, biscuits, bread, pastries)
+- Indian dishes (Dal, Biryani, Roti, Idli etc.)
+- Fast food (burgers, pizza, fries etc.)
+- Beverages (juices, smoothies, drinks)
+- Snacks and street food
+- Restaurant meals from any cuisine
+- Home cooked meals
 
 Respond ONLY with a valid JSON object — no markdown, no backticks, no extra text:
 {
-  "dishName": "Exact name of the dish",
+  "dishName": "Exact name of the food item",
   "calories": 320,
   "protein": 14,
   "carbs": 48,
   "fat": 8,
-  "servingSize": "1 plate (approximately 300g)",
+  "servingSize": "1 serving (approximately 100g)",
   "confidence": "high"
 }
 
 Important rules:
-- Be specific with Indian dishes: Dal tadka, Rajma chawal, Paneer butter masala, Idli sambar, Chole bhature, Biryani etc.
+- Identify ALL types of food — fruits, vegetables, snacks, meals, beverages, baked goods
+- For fruits: "1 medium apple (182g)" or "1 banana (118g)"
+- For baked goods: "1 slice chocolate cake (80g)" or "2 biscuits (30g)"
+- For packaged foods: estimate based on visible portion
 - Estimate nutrition for ONE standard serving visible in the image
-- If multiple dishes on plate, analyze the entire plate combined
+- If multiple items visible, analyze the entire plate/portion combined
 - confidence must be: "high", "medium" or "low"
 - If image is not food, return: {"error": "Not a food image"}
 - Return ONLY the JSON object, nothing else`;
