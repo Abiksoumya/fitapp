@@ -11,11 +11,15 @@ export const StepsDao = {
     loggedAt:  Date;
   },
 ) => {
+  // Normalize to midnight to avoid duplicate records
+  const midnight = new Date(data.loggedAt);
+  midnight.setHours(0, 0, 0, 0);
+
   return prisma.stepLog.upsert({
     where: {
       userId_loggedAt: {
         userId,
-        loggedAt: data.loggedAt,
+        loggedAt: midnight,
       },
     },
     update: {
@@ -24,7 +28,14 @@ export const StepsDao = {
       calories:  data.calories,
       activeMin: data.activeMin,
     },
-    create: { userId, ...data },
+    create: {
+      userId,
+      steps:     data.steps,
+      distance:  data.distance,
+      calories:  data.calories,
+      activeMin: data.activeMin,
+      loggedAt:  midnight,
+    },
   });
 },
 getMonthly: async (userId: string) => {

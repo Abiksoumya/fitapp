@@ -5,6 +5,8 @@ node_modules
 /generated/prisma
 
 dist
+logs
+backup
 
 prisma/migrations
 prisma/generated

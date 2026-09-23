@@ -37,4 +37,6 @@ router.post(
   asyncHandler(NutritionController.scanFood),  // run AI scan
 );
 
+router.get('/monthly', asyncHandler(NutritionController.getMonthly));
+
 export default router;

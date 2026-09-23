@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors.utils';
 import { sendError } from '../utils/response.utils';
+import logger from '../config/logger';
 
 export const errorHandler = (
   err: Error,
@@ -8,8 +9,10 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction,
 ): void => {
-  console.error(`[ERROR] ${err.message}`, err.stack);
-
+logger.error(`${err.message}`, {
+  stack:  err.stack,
+  name:   err.name,
+});
   if (err instanceof AppError) {
     sendError(res, err.message, err.statusCode);
     return;

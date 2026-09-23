@@ -61,4 +61,7 @@ export const NutritionService = {
   logWater: async (userId: string, glasses: number) => {
     return NutritionDao.logWater(userId, glasses);
   },
+  getMonthlyNutrition: async (userId: string) => {
+  return NutritionDao.getMonthlyNutrition(userId);
+},
 };

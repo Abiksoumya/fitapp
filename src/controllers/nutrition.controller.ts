@@ -62,5 +62,10 @@ export const NutritionController = {
     },
     'Food analysed successfully',
   );
+  },
+  
+  getMonthly: async (req: AuthRequest, res: Response) => {
+  const data = await NutritionService.getMonthlyNutrition(req.user!.id);
+  sendSuccess(res, data);
 },
 };
