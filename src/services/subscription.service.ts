@@ -8,6 +8,7 @@ import { AppError, NotFoundError } from '../utils/errors.utils';
 import { ScanQuotaStatus } from '../models/subscription.model';
 import env from '../config/env';
 import prisma from '../config/database';
+import { EmailService } from './email.service';
 
 // Helper — determine if subscription is currently active
 const resolveStatus = (sub: Awaited<ReturnType<typeof SubscriptionDao.getByUserId>>) => {
@@ -340,11 +341,27 @@ export const SubscriptionService = {
       },
     });
     await ScanQuotaDao.addExtraScans(userId, TOPUP_PACK.scans);
-    return {
-      type:       'topup',
-      scansAdded: TOPUP_PACK.scans,
-      message:    `${TOPUP_PACK.scans} extra scans added successfully!`,
-    };
+
+// Send payment receipt email
+const topupUser = await prisma.user.findUnique({
+  where:  { id: userId },
+  select: { email: true, name: true },
+});
+if (topupUser) {
+  await EmailService.sendPaymentReceipt(
+    topupUser.email,
+    topupUser.name,
+    TOPUP_PACK.priceInPaise / 100,
+    razorpayPaymentId,
+    'Top-up (30 scans)',
+  ).catch(() => null);
+}
+
+return {
+  type:       'topup',
+  scansAdded: TOPUP_PACK.scans,
+  message:    `${TOPUP_PACK.scans} extra scans added successfully!`,
+};
   }
 
   // Check payment table for subscription
@@ -374,12 +391,37 @@ export const SubscriptionService = {
   periodEnd.setDate(periodEnd.getDate() + 30);
   await ScanQuotaDao.create(userId, plan.scansPerMonth, periodEnd);
 
-  return {
-    type:     'subscription',
-    plan:     planId,
-    planName: plan.name,
-    message:  `Welcome to ${plan.name}! All premium features are now unlocked.`,
-  };
+// Send payment receipt + subscription confirmation email
+const subUser = await prisma.user.findUnique({
+  where:  { id: userId },
+  select: { email: true, name: true },
+});
+if (subUser) {
+  const subscription = await SubscriptionDao.getByUserId(userId);
+  await Promise.all([
+    EmailService.sendPaymentReceipt(
+      subUser.email,
+      subUser.name,
+      plan.priceInPaise / 100,
+      razorpayPaymentId,
+      plan.name,
+    ).catch(() => null),
+    EmailService.sendSubscriptionConfirmation(
+      subUser.email,
+      subUser.name,
+      plan.name,
+      plan.priceInPaise / 100,
+      subscription?.currentPeriodEnd || new Date(),
+    ).catch(() => null),
+  ]);
+}
+
+return {
+  type:     'subscription',
+  plan:     planId,
+  planName: plan.name,
+  message:  `Welcome to ${plan.name}! All premium features are now unlocked.`,
+};
 },
 
   // Use one scan

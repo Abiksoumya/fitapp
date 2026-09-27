@@ -12,6 +12,8 @@ import {
 } from '../utils/errors.utils';
 import { UserCreateInput } from '../models/user.model';
 import { SubscriptionService } from './subscription.service';
+import { EmailService } from './email.service';
+import { verifyGoogleToken } from './google.auth.service';
 
 export const AuthService = {
   register: async (input: UserCreateInput) => {
@@ -25,7 +27,8 @@ export const AuthService = {
       password: hashedPassword,
     });
     await SubscriptionService.initFreeUser(user.id);
-
+// Send welcome email
+EmailService.sendWelcome(user.email, user.name).catch(() => null);
 
     const accessToken  = generateAccessToken({
       id:     user.id,
@@ -47,7 +50,7 @@ export const AuthService = {
   },
 
   login: async (email: string, password: string) => {
-    const user = await UserDao.findByEmail(email);
+  const user = await UserDao.findByEmailWithPassword(email);
     if (!user) throw new UnauthorizedError('Invalid email or password');
 
     const isValid = await comparePassword(password, user.password);
@@ -97,4 +100,63 @@ export const AuthService = {
   logout: async (token: string) => {
     await UserDao.deleteRefreshToken(token).catch(() => null);
   },
+
+  googleAuth: async (idToken: string) => {
+  const googleUser = await verifyGoogleToken(idToken);
+
+  // Check if user exists
+  let existingUser = await UserDao.findByEmail(googleUser.email);
+  const isNewUser  = !existingUser;
+
+  if (!existingUser) {
+    // Create new user
+    existingUser = await UserDao.create({
+  email:            googleUser.email,
+  name:             googleUser.name,
+  password:         '',
+  gender:           'other',
+  googleId:         googleUser.googleId,
+  fitnessGoal:      'stay_fit',
+  fitnessLevel:     'beginner',
+  dailyCalGoal:     1800,
+  dailyProteinGoal: 120,
+  dailyCarbsGoal:   250,
+  dailyFatGoal:     65,
+});
+
+    // Init free trial
+    await SubscriptionService.initFreeUser(existingUser.id);
+
+    // Send welcome email
+    EmailService.sendWelcome(existingUser.email, existingUser.name).catch(() => null);
+  }
+
+  const accessToken  = generateAccessToken({
+    id:     existingUser.id,
+    email:  existingUser.email,
+    gender: existingUser.gender,
+  });
+
+  const refreshToken = generateRefreshToken({
+    id:     existingUser.id,
+    email:  existingUser.email,
+    gender: existingUser.gender,
+  });
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+  await UserDao.saveRefreshToken(existingUser.id, refreshToken, expiresAt);
+
+  return {
+    accessToken,
+    refreshToken,
+    isNewUser,
+    user: {
+      id:     existingUser.id,
+      name:   existingUser.name,
+      email:  existingUser.email,
+      gender: existingUser.gender,
+    },
+  };
+},
 };

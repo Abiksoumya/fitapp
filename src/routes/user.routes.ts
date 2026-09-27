@@ -20,5 +20,5 @@ router.get(
 );
 
 router.post('/fcm-token', asyncHandler(UserController.saveFcmToken));
-
+router.delete('/me', asyncHandler(UserController.deleteAccount));
 export default router;

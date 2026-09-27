@@ -8,6 +8,8 @@ import {
   refreshSchema,
 } from '../schemas/auth.schema';
 import rateLimit from 'express-rate-limit';
+import { sendSuccess } from '../utils/response.utils';
+import { EmailService } from '../services/email.service';
 
 
 const authLimiter = rateLimit({
@@ -30,5 +32,10 @@ router.post('/register', authLimiter, validate(registerSchema), asyncHandler(Aut
 router.post('/login',    authLimiter, validate(loginSchema),    asyncHandler(AuthController.login));
 router.post('/refresh',  validate(refreshSchema),  asyncHandler(AuthController.refresh));
 router.post('/logout',   asyncHandler(AuthController.logout));
+router.post('/google', asyncHandler(AuthController.googleAuth));
 
+router.get('/test-email', asyncHandler(async (_req, res) => {
+  await EmailService.sendWelcome('soumyamohanty540@gmail.com', 'Test User');
+  sendSuccess(res, null, 'Test email sent!');
+}));
 export default router;

@@ -1,6 +1,7 @@
 import * as cron from 'node-cron';
 import prisma    from '../config/database';
 import { sendNotification } from '../config/firebase';
+import { EmailService } from './email.service';
 
 export const startNotificationCrons = () => {
 
@@ -13,7 +14,7 @@ export const startNotificationCrons = () => {
           fcmToken: { not: null },
           gender:   'female',
         },
-        select: { id: true, fcmToken: true, name: true },
+        select: { id: true, fcmToken: true, email: true, name: true },
       });
 
       for (const user of users) {
@@ -133,6 +134,7 @@ export const startNotificationCrons = () => {
         select: {
           id:       true,
           fcmToken: true,
+          email:    true,
           name:     true,
         },
       });
@@ -161,8 +163,14 @@ export const startNotificationCrons = () => {
               'Your free trial ends in 3 days. Subscribe now from ₹299/month to keep all premium features!',
               { screen: 'subscription' },
             );
+            await EmailService.sendTrialExpiryReminder(
+  user.email,
+  user.name,
+  3,
+).catch(() => null);
             console.log(`✅ Trial expiry reminder sent to ${user.id}`);
           }
+          // After sending push notification for 3 days left
 
           if (diffDays === 1) {
             await sendNotification(
@@ -171,6 +179,11 @@ export const startNotificationCrons = () => {
               'Your free trial ends tomorrow! Subscribe now to avoid losing access to premium features.',
               { screen: 'subscription' },
             );
+            await EmailService.sendTrialExpiryReminder(
+  user.email,
+  user.name,
+  1,
+).catch(() => null);
             console.log(`✅ Trial last day reminder sent to ${user.id}`);
           }
         }

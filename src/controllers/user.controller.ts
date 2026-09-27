@@ -4,6 +4,7 @@ import { UserDao } from '../dao/user.dao';
 import { WorkoutDao } from '../dao/workout.dao';
 import { sendSuccess } from '../utils/response.utils';
 import { NotFoundError } from '../utils/errors.utils';
+import { EmailService } from '../services/email.service';
 
 export const UserController = {
   getMe: async (req: AuthRequest, res: Response) => {
@@ -25,5 +26,24 @@ export const UserController = {
   const { fcmToken } = req.body;
   await UserDao.update(req.user!.id, { fcmToken });
   sendSuccess(res, null, 'FCM token saved');
+  },
+  
+  deleteAccount: async (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+
+  // Get user details before deletion for email
+  const user = await UserDao.findById(userId);
+  if (!user) throw new NotFoundError('User not found');
+
+  // Delete all data
+  await UserDao.deleteAccount(userId);
+
+  // Send confirmation email
+  await EmailService.sendDataDeletionConfirmation(
+    user.email,
+    user.name,
+  ).catch(() => null);
+
+  sendSuccess(res, null, 'Account deleted successfully');
 },
 };

@@ -37,7 +37,8 @@ export interface UserCreateInput {
   dailyCalGoal: number;
   dailyProteinGoal: number;
   dailyCarbsGoal:   number;
-  dailyFatGoal:     number;
+  dailyFatGoal: number;
+  googleId?: string;
   
 }
 

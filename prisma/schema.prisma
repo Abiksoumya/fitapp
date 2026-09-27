@@ -31,7 +31,7 @@ model Partner {
 model User {
   id              String        @id @default(cuid())
   email           String        @unique
-  password        String
+  password  String  @default("")
   name            String
   role      String   @default("user") // user | admin
   age             Int?
@@ -69,6 +69,7 @@ model User {
   payments        Payment[]
   topUpPacks      TopUpPack[]
   customWorkoutPlans CustomWorkoutPlan[]
+  googleId  String?  // for Google Sign-In users
 
 }
 
@@ -136,19 +137,19 @@ model ScanQuota {
 }
 
 model Payment {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  razorpayOrderId String   @unique
+  id                String   @id @default(cuid())
+  userId            String?  // ← nullable for anonymization
+  user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull) // ← SetNull instead of Cascade
+  razorpayOrderId   String   @unique
   razorpayPaymentId String?
   razorpaySignature String?
-  amount          Int
-  currency        String   @default("INR")
-  status          String   @default("created")
-  type            String   @default("subscription")
-  plan            String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  amount            Int
+  currency          String   @default("INR")
+  status            String   @default("created")
+  type              String   @default("subscription")
+  plan              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model TopUpPack {

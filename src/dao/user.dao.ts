@@ -9,11 +9,18 @@ export const UserDao = {
     });
   },
 
-  findByEmail: async (email: string) => {
-    return prisma.user.findUnique({
-      where: { email },
-    });
-  },
+  findByEmailWithPassword: async (email: string) => {
+  return prisma.user.findUnique({
+    where: { email },
+  });
+},
+
+findByEmail: async (email: string) => {
+  return prisma.user.findUnique({
+    where: { email },
+    omit:  { password: true },
+  });
+},
 
   create: async (data: UserCreateInput) => {
     return prisma.user.create({
@@ -58,4 +65,20 @@ export const UserDao = {
       where: { userId },
     });
   },
+
+  deleteAccount: async (userId: string) => {
+  // Delete all user data in correct order
+  await prisma.$transaction([
+    prisma.waterLog.deleteMany({       where: { userId } }),
+    prisma.meal.deleteMany({           where: { userId } }),
+    prisma.stepLog.deleteMany({        where: { userId } }),
+    prisma.cycleLog.deleteMany({       where: { userId } }),
+    prisma.workoutLog.deleteMany({     where: { userId } }),
+    prisma.customWorkoutPlan.deleteMany({ where: { userId } }),
+    prisma.scanQuota.deleteMany({      where: { userId } }),
+    prisma.subscription.deleteMany({   where: { userId } }),
+    prisma.refreshToken.deleteMany({   where: { userId } }),
+    prisma.user.delete({               where: { id: userId } }),
+  ]);
+},
 };
