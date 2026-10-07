@@ -107,12 +107,13 @@ export const AdminDao = {
           gender:    true,
           createdAt: true,
           subscription: {
-            select: {
-              plan:      true,
-              status:    true,
-              expiresAt: true,
-            },
-          },
+  select: {
+    plan:             true,
+    status:           true,
+    currentPeriodEnd: true,
+    trialEndDate:     true,
+  },
+},
         },
       }),
       prisma.user.count({ where }),
@@ -139,12 +140,13 @@ export const AdminDao = {
         heightCm:  true,
         createdAt: true,
         subscription: {
-          select: {
-            plan:      true,
-            status:    true,
-            expiresAt: true,
-          },
-        },
+  select: {
+    plan:             true,
+    status:           true,
+    currentPeriodEnd: true,
+    trialEndDate:     true,
+  },
+},
         scanQuota: {
           select: {
             scansUsed:  true,

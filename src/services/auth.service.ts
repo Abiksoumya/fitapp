@@ -25,6 +25,9 @@ export const AuthService = {
     const user = await UserDao.create({
       ...input,
       password: hashedPassword,
+      privacyConsentAt: new Date(),
+  dataConsentAt:    new Date(),
+  consentVersion:   '1.0',
     });
     await SubscriptionService.initFreeUser(user.id);
 // Send welcome email

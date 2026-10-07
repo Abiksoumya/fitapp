@@ -55,6 +55,9 @@ model User {
   dailyProteinGoal  Int   @default(120)
   dailyCarbsGoal    Int   @default(250)
   dailyFatGoal      Int   @default(65)
+  privacyConsentAt    DateTime?  // when user accepted privacy policy
+  dataConsentAt       DateTime?  // when user accepted data collection
+  consentVersion      String?    // version of privacy policy they agreed to
 
 
   meals           Meal[]

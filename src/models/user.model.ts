@@ -39,6 +39,9 @@ export interface UserCreateInput {
   dailyCarbsGoal:   number;
   dailyFatGoal: number;
   googleId?: string;
+  privacyConsentAt?: Date;
+  dataConsentAt?:    Date;
+  consentVersion?:   string;
   
 }
 
@@ -58,5 +61,8 @@ export interface UserUpdateInput {
   workoutReminderOn?: boolean;
   dailyProteinGoal?: number;
   dailyCarbsGoal?:   number;
-  dailyFatGoal?:     number;
+  dailyFatGoal?: number;
+  privacyConsentAt?: Date;
+dataConsentAt?:    Date;
+consentVersion?:   string;
 }
